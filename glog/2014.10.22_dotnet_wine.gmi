@@ -1,0 +1,27 @@
+# Ошибка установки dotnet4.0 в wine64
+
+На amd64 с помощью winetricks пытаемся ставить dotnet40:
+winetricks dotnet40
+DВ результате получаем ошибку вида:
+```
+ "Same or higher version of .NET Framework 4 has already been installed on this computer."
+```
+О том, что такая или более свежая версия dotnet4 уже установлена. После чего установка не может продолжиться.
+
+Чистка реестра в wine не помогает.
+
+Что нужно сделать:
+1. Создаём 32-х битное окружение wine (директорию .wine32_new создавать перед этим не нужно!):
+```
+export WINEPREFIX=/home/ваш_пользователь/.wine32_new
+export WINEARCH=win32
+winboot
+```
+2. Чистим реестр:
+`wine regedit`
+Удаляем каталог `v4` в `HKEY_LOCAL_MACHINE/Software/Microsoft/NET Framework Setup/NDP/`
+
+После чего можно ставить с помощью winetricks:
+```
+winetricks dotnet40
+```
