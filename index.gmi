@@ -6,3 +6,4 @@
 =>glog/2014.10.5_pulseaudio.gmi 2014.10.5 Не работают несколько приложений с pulseaudio
 =>glog/2014.7.23_sendEmail.gmi 2014.7.23 Ошибка отправки письма через sendEmail: invalid SSL_version specified at /usr/share/perl5/IO/Socket/SSL.pm line 332
 =>glog/2014.7.11_debian_install.gmi 2014.7.11 Настройка свежеустановленной системы Debian
+=>glog/2014.7_javaaplet.gmi 2014.7 Настройка безопасности java-аплета в Ubuntu

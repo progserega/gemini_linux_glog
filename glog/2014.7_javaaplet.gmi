@@ -1,0 +1,10 @@
+# Настройка безопасности java-аплета в Ubuntu
+
+Взято тут:
+=> http://askubuntu.com/questions/386046/upgraded-to-13-04-now-getting-jredetection-your-security-settings-have-blocked
+
+1. Запускаем в консоли jcontrol
+1. Добавляем наш сайт в разрешённые
+1. Перезагружаем страницу или браузер.
+
+=>../index.gmi вернуться к началу...
