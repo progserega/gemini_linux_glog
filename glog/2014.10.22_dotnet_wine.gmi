@@ -27,3 +27,4 @@ wine regedit
 ``` повторная установка дотнета
 winetricks dotnet40
 ```
+=>../index.gmi вернуться к началу...

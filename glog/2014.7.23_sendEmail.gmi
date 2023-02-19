@@ -1,0 +1,14 @@
+# Ошибка отправки письма через sendEmail: invalid SSL_version specified at /usr/share/perl5/IO/Socket/SSL.pm line 332
+
+На Debian sendEmail может не отправлять письма, ругаясь следующим образом:
+
+```
+invalid SSL_version specified at /usr/share/perl5/IO/Socket/SSL.pm line 332
+
+```
+
+Чтобы обойти эту ошибку, можно указать опцию:
+```
+-o tls=no
+```
+=>../index.gmi вернуться к началу...

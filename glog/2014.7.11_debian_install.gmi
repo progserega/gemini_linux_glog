@@ -1,0 +1,62 @@
+# Не работают несколько приложений с pulseaudio
+
+## Настройка сети 
+```
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+        address 172.21.251.32
+        netmask 255.255.255.0
+        gateway 172.21.251.1
+```
+
+## Установка локали
+```
+apt-get install console-cyrillic
+dpkg-reconfigure locales
+/etc/init.d/console-cyrillic start
+```
+## Установка временной зоны
+```
+dpkg-reconfigure tzdata
+```
+## Переключение альтернатив
+Список всех переключателей:
+```
+update-alternatives --get-selections
+```
+## Смена версии Java
+javavm:
+```
+update-alternatives --config java
+```
+Firefox java plugin:
+```
+update-alternatives --config mozilla-javaplugin.so
+```
+## Установка Firmware
+
+Установка дополнительного пакета с firmware (внутренних прошивок железок). Чтобы скачать нужный архив, пройдите по ссылке: 
+=> http://cdimage.debian.org/cdimage/unofficial/non-free/firmware/
+
+## Добавление старых библиотек
+Иногда бывает нужны другие версии библиотек (например для установки firebird2.0.x на Debian 7.1).
+В Debian 7.1 в системе стоит libstdc++6, чтобы доставить 5-ю версию нужно дать команду:
+```
+apt-get install libstdc++5
+```
+## Установка Zabbix
+По официальной документации.
+Подключаем репозитарии 
+```
+wget http://repo.zabbix.com/zabbix/2.2/debian/pool/main/z/zabbix-release/zabbix-release_2.2-1+wheezy_all.deb
+dpkg -i zabbix-release_2.2-1+wheezy_all.deb
+apt-get update
+```
+Устанавливаем агента
+```
+apt-get install zabbix-agent
+```
+=>../index.gmi вернуться к началу...
