@@ -3,3 +3,6 @@
 =>img/linux.png Иконка линукса
 =>glog/2016.10.17_postgis.gmi 2016.10.17 Поиск близлежайших объектов в postgis
 =>glog/2014.10.22_dotnet_wine.gmi 2014.10.22 Ошибка установки dotnet4.0 в wine64
+=>glog/2014.10.5_pulseaudio.gmi 2014.10.5 Не работают несколько приложений с pulseaudio
+=>glog/2014.7.23_sendEmail.gmi 2014.7.23 Ошибка отправки письма через sendEmail: invalid SSL_version specified at /usr/share/perl5/IO/Socket/SSL.pm line 332
+=>glog/2014.7.11_debian_install.gmi 2014.7.11 Настройка свежеустановленной системы Debian
