@@ -1,6 +1,7 @@
 # Линукс-блог пользователя progserega
 Картинка:
 =>img/linux.png Иконка линукса
+=>glog/2023.02.21_postgrespro_1c.gmi 2023.02.21 Настройка PostgresPro 1C enterprise для работы с 1С
 =>glog/2016.10.17_postgis.gmi 2016.10.17 Поиск близлежайших объектов в postgis
 =>glog/2014.10.22_dotnet_wine.gmi 2014.10.22 Ошибка установки dotnet4.0 в wine64
 =>glog/2014.10.5_pulseaudio.gmi 2014.10.5 Не работают несколько приложений с pulseaudio
