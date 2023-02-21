@@ -1,11 +1,11 @@
 # Настройка PostgresPro 1C enterprise для работы с 1С
 
-## получаем от PostgresPro iso-диск с репами.
-## копируем его на целевую машину, монтируем как loop в /mnt/loop:
+* получаем от PostgresPro iso-диск с репами.
+* копируем его на целевую машину, монтируем как loop в /mnt/loop:
 ```
  mount -o loop,ro PostgresProEntCert-11.18.2+13.9.1+14.6.1.iso /mnt/loop/
 ```
-## настраиваем локаль (выбираем ru_RU.UTF-8 по-умолчанию):
+* настраиваем локаль (выбираем ru_RU.UTF-8 по-умолчанию):
 ```
 dpkg-reconfigure locales
 ```
