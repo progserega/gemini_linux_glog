@@ -1,15 +1,14 @@
 # Настройка PostgresPro 1C enterprise для работы с 1С
 
-* получаем от PostgresPro iso-диск с репами.
-* копируем его на целевую машину, монтируем как loop в /mnt/loop:
+Получаем от PostgresPro iso-диск с репами, копируем его на целевую машину, монтируем как loop в /mnt/loop:
 ```
  mount -o loop,ro PostgresProEntCert-11.18.2+13.9.1+14.6.1.iso /mnt/loop/
 ```
-* настраиваем локаль (выбираем ru_RU.UTF-8 по-умолчанию):
+настраиваем локаль (выбираем ru_RU.UTF-8 по-умолчанию):
 ```
 dpkg-reconfigure locales
 ```
-1. На диске есть репы. Прописываем их в apt в файл: /etc/apt/sources.list.d/postgres.list 
+На диске есть репы. Прописываем их в apt в файл: /etc/apt/sources.list.d/postgres.list 
 ```
 deb [trusted=yes] file:/mnt/loop/astra-smolensk/1.7/ 1.7_x86-64 main
 ```
