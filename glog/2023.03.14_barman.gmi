@@ -1,0 +1,20 @@
+# Настройка barman для резервирования postgres
+## Логика работы barman
+
+=>img/barman-architecture-scenario1b.png Архитектура barman
+
+Запуск восстановления на конкретную дату на сервере barman из-под пользователя barman:
+```
+barman recover --get-wal --remote-ssh-command 'ssh postgres@pg-cluster01.rs.int'  --target-time "2023-03-14 11:18:00+10:00" pg_cluster01 20230314T111258 /var/lib/postgresql/13/main.recover
+```
+
+Останавливаем сервис postgres (на сервере postgres):
+```
+systemctl stop postgresql.service
+```
+Запуск восстановления postgres на сервере postgres (из-под пользователя postgres):
+``` ошибка установки дотнета
+ /usr/lib/postgresql/13/bin/postgres --single -c config_file=/etc/postgresql/13/main/postgresql.conf -D /var/lib/postgresql/13/main -P -d 5
+```
+
+=>../index.gmi 🔙 вернуться к началу...
