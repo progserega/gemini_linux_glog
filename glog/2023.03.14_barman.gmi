@@ -32,14 +32,10 @@ barman recover --get-wal --remote-ssh-command 'ssh postgres@pg-cluster01.rs.int'
 ```
 Либо восстановление на конкретную дату на сервере barman из-под пользователя barman:
 ```
-barman recover --get-wal --remote-ssh-command 'ssh postgres@pg-cluster01.rs.int'  --target-time "2023-03-14 11:18:00+10:00" pg_cluster01 20230314T111258 /var/lib/postgresql/13/main.recover
+barman recover --get-wal --remote-ssh-command 'ssh postgres@pg-cluster01.rs.int'  --target-time "2023-03-14 11:18:00+10:00" pg_cluster01 20230314T111258 /var/lib/postgresql/13/main
 ```
 Где 20230314T111258 - имя бэкапа, которое выдаёт команда `barman list-backup pg_cluster01`, либо это имя может принимать значение latest - самый последний бэкап.
-1. На серере postgres либо просто стартуем postgres:
-```
-systemctl start postgresql.service
-```
-Либо запускаем восстановления postgres на сервере postgres (из-под пользователя postgres):
+1. На серере postgres запускаем восстановление (из-под пользователя postgres):
 ```
  /usr/lib/postgresql/13/bin/postgres --single -c config_file=/etc/postgresql/13/main/postgresql.conf -D /var/lib/postgresql/13/main -P -d 5
 ```
