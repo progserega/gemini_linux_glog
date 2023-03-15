@@ -17,7 +17,7 @@
 ```
 barman receive-wal --stop pg_cluster01
 ```
-1. останавливаем PostgreSQL на сервере базы данных: `
+1. останавливаем PostgreSQL на сервере базы данных:
 ```
 systemctl stop postgresql.service
 ```
