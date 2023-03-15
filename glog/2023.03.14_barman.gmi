@@ -11,13 +11,22 @@
 
 Последовательность действий такова:
 1. Произошёл сбой PostgreSQL сервера или мы решили откатить данные.
-1. На сервере barman комментируем задание в файле `/etc/cron.d/barman`
-1. на всякий случай останавливаем передачу wal-файлов под пользователем barman `barman receive-wal --stop pg_cluster01`
+1. На сервере barman комментируем задание в файле 
+```
+/etc/cron.d/barman
+```
+1. на всякий случай останавливаем передачу wal-файлов под пользователем barman 
+```
+barman receive-wal --stop pg_cluster01
+```
 1. останавливаем PostgreSQL на сервере базы данных: `
 ```
 systemctl stop postgresql.service
 ```
-1. Желательно сохранить директорию с файлами базы данных: `mv /var/lib/postgresql/13/main /var/lib/postgresql/13/main.old.bak`
+1. Желательно сохранить директорию с файлами базы данных: 
+```
+mv /var/lib/postgresql/13/main /var/lib/postgresql/13/main.old.bak
+```
 1. Восстанавливаем данные postgresql-сервера с сервера barman (команду запускаем на серере barman):
 Либо самые последние доступные данные:
 ```
