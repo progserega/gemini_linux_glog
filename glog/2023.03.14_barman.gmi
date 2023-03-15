@@ -1,7 +1,7 @@
 # Настройка barman для резервирования postgres
 ## Логика работы barman
 
-=>img/barman-architecture-scenario1b.png Архитектура barman
+=>../img/barman-architecture-scenario1b.png Архитектура barman
 
 Запуск восстановления на конкретную дату на сервере barman из-под пользователя barman:
 ```
