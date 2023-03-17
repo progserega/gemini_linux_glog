@@ -49,6 +49,36 @@ barman recover --get-wal --remote-ssh-command 'ssh postgres@pg-cluster01.rs.int'
 systemctl start postgresql.service
 ```
 Тут же зайдя в постгрес клиентом и сделав select в нужной таблице - можно увидеть как появляются (постепенно) записи до указанного времени.
-8. Заново запускаем бэкап postgres->barman (пока не знаю как :-) )
+
+Завершаем процесс восстановления на Postgres-е (все данные там в режиме "только чтение" до этого момента):
+```
+postgres=# select pg_wal_replay_resume();
+ pg_wal_replay_resume 
+----------------------
+ 
+(1 row)
+```
+После этого можно писать в таблицы.
+### Заново запускаем бэкап postgres->barman
+После восстановления на более раннюю дату - нужно запустить репликацию командой на barman-е:
+```
+barman receive-wal --reset pg_cluster01
+```
+Если в ответ получаем ошибку вида:
+```
+barman@pg-cluster02:/root$ barman receive-wal --reset pg_cluster01
+ERROR: The receive-wal position is ahead of PostgreSQL current WAL lsn (000000070000000000000029.partial > None)
+```
+То нужно убрать файлы из streaming и повторить процесс:
+```
+mkdir /mnt/backup/barman/pg_cluster01/streaming.old/
+mv /mnt/backup/barman/pg_cluster01/streaming/* /mnt/backup/barman/pg_cluster01/streaming.old/
+barman receive-wal --reset pg_cluster01
+```
+А так же может быть понадобится команда пересборки базы barman и, может быть, повторный сброс индексов wal:
+```
+barman rebuild-xlogdb pg_cluster01
+barman receive-wal --reset pg_cluster01
+```
 
 =>../index.gmi 🔙 вернуться к началу...
