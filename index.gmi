@@ -1,8 +1,7 @@
 # Линукс-блог пользователя progserega
 Картинка:
 =>img/linux.png Иконка линукса
-=>glog/2024.02.23_mpd_and_piperwire.gmi 2024.02.23 настройка mpd на работу из-под пользователя как systemd-unit с выводом звука
-через piperwire в Debian 12
+=>glog/2024.02.23_mpd_and_piperwire.gmi 2024.02.23 настройка mpd на работу из-под пользователя как systemd-unit с выводом звука через piperwire в Debian 12
 =>glog/2023.12.25_lvmcache.gmi 2023.12.25 Настройка lvm cache на nvmeв том числе для root-раздела  
 =>glog/2023.03.14_barman.gmi 2023.03.14 Настройка barman для резервирования postgres
 =>glog/2023.02.21_postgrespro_1c.gmi 2023.02.21 Настройка PostgresPro 1C enterprise для работы с 1С
