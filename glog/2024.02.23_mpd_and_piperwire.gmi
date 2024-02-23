@@ -1,0 +1,44 @@
+# Настройка mpd с piperwire под пользователем
+Проверено на debian 12.
+
+=>https://wiki.archlinux.org/title/Music_Player_Daemon#Per-user_configuration
+
+# Запускаем mpd под пользователем 
+
+```
+sudo systemctl disable mpd.service
+systemctl --user enable mpd
+```
+
+# Создаём конфиг mpd для пользователя
+```
+mkdir -p ~/.config/mpd
+zcat /usr/share/doc/mpd/mpdconf.example.gz > ~/.config/mpd/mpd.conf
+```
+
+```
+cat ~/.config/mpd/mpd.conf|grep -v '^#.*'
+music_directory		"/mnt/media/Музыка"
+playlist_directory "~/.config/mpd/playlists"
+db_file            "~/.config/mpd/database"
+pid_file           "~/.config/mpd/pid"
+state_file         "~/.local/state/mpd/state"
+sticker_file       "~/.config/mpd/sticker.sql"
+auto_update	"yes"
+input {
+        plugin "curl"
+}
+audio_output {
+        type            "pipewire"
+        name            "PipeWire Sound Server"
+}
+```
+Создаём нужные директории и перезагружаем mpd:
+```
+mkdir -p ~/.config/mpd/playlists
+mkdir -p ~/.local/state/mpd
+systemctl --user restart mpd
+```
+Ставим любимый интерфейс (например gmpc, mpc), запускаем и радуемся.
+
+=>../index.gmi 🔙 вернуться к началу...
