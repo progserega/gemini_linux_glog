@@ -3,6 +3,30 @@
 =>https://help.ubuntu.ru/wiki/руководство_по_ubuntu_server/безопасность/apparmor 
 =>https://vasilisc.com/rules_apparmor
 
+## Логика
+1. Ставим напор сторонних профилей, чтобы было откуда брать примеры:
+```
+apt-get install apparmor-profiles
+```
+2. Копируем подходящий профиль (слэши заменяем точками, имя профиля - путь к ограничиваемому бинарнику):
+```
+cp /etc/apparmor.d/usr.lib.unreal /etc/apparmor.d/opt.Unigine_Superposition-1.1.Superposition
+```
+3. Правим путь к файлу бинарника внутри профиля.
+
+4. Перезапускаем apparmor, смотрим логи:
+```
+systemctl reload apparmor; journalctl -af _TRANSPORT=audit
+```
+5. по-возможности добавляем классические разрешения для шрифтов, звука и т.п. типа:
+```
+#include <abstractions/fonts>
+#include <abstractions/X>
+#include <abstractions/audio>
+```
+6. По таблице "Правила доступа" добавляем прав на дополнительные файлы, пользуемся таблицей шаблонов (см. ниже), а так же 
+сокращениями для типовых директорий типа home, sys (см. пример профиля ниже).
+
 ## Просмотр логов:
 ```
 journalctl -af _TRANSPORT=audit
@@ -16,12 +40,99 @@ journalctl -af _TRANSPORT=audit
 
 ## Правила доступа:
 
-* `r` - Разрешение на чтение файла.
-* `w` - Разрешение на запись файла.
-* `a` - Ограниченное разрешение на запись файла – процесс может только дописывать
+* 'r' - Разрешение на чтение файла.
+* 'w' - Разрешение на запись файла.
+* 'a' - Ограниченное разрешение на запись файла – процесс может только дописывать
 информацию в файл (полезно для лог-файлов!). 
+* 'px' - Новый процесс запускается под своим профилем. Если профиля нет, то запуск
+процесса запрещен. 
+* 'Px' - Новый процесс запускается под своим профилем, при этом AppArmor очищает
+переменные окружения. Если профиля нет, то запуск процесса запрещен. 
+* 'ix' - Новый процесс будет запущен под профилем текущего. 
+* 'm' - Разрешение отображения файла в память и его запуска. 
+* 'l' - AppArmor разрешает программе создание символической ссылки на файл и запуск. Разрешения файла те же, что и у исходного. 
+* 'k' - Разрешение выполнения блокировки файла.
+* 'ux' - Разрешение выполнения блокировки файла.
+* 'Ux' - Новый процесс никак не контролируется, но AppArmor очищает переменные окружения.
 
+## Использование шаблонов в путях к разрешаемым ресурсам-файлам:
 
+* '*' - Любое количество любых знаков, за исключением символа каталога (/)
+* '**' - Любое количество любых знаков, включая символ каталога (/)
+* '?' - Любой одиночный знак, за исключением символа каталога (/) 
+* '[ ade ]' - Один из знаков: a, d или e 
+* '[ a-c ]' - Один из знаков: a, b или c 
+* '{ ab, cd }' - Либо ab, либо cd
 
+## Пример профиля
+Для запуска /opt/Unigine_Superposition-1.1/Superposition
+```
+# Superposition GPU test AppArmor profile
+# Copyright © 2024 progserega
+# License-Identifier: GPL3
+
+#include <tunables/global>
+
+#profile unreal /usr/lib/unreal-*/System/*.bin flags=(complain) {
+profile superposition /opt/Unigine_Superposition-*/Superposition {
+  #include <abstractions/fonts>
+  #include <abstractions/X>
+  #include <abstractions/audio>
+  #include <abstractions/base>
+  #include <abstractions/dri-common>
+  #include <abstractions/dri-enumerate>
+  #include <abstractions/mesa>
+  #include <abstractions/nameservice>
+  #include <abstractions/nvidia>
+  #include <abstractions/vulkan>
+  #include <abstractions/private-files-strict>
+
+  network inet dgram,
+  network inet stream,
+  network inet6 dgram,
+  network inet6 stream,
+
+  /etc/libnl-*/classid r,
+  /etc/machine-id r,
+  /var/lib/dbus/machine-id r,
+  @{PROC}/@{pid}/net/psched r,
+  @{sys}/devices/system/cpu/{,**} r,
+  # gpu:
+  /usr/share/libdrm/** r,
+  @{sys}/devices/pci*/**/hwmon/ r,
+  @{sys}/devices/pci*/**/hwmon/** r,
+  @{sys}/devices/pci*/**/*clk* r,
+  @{sys}/devices/pci*/**/pp_dpm_pcie r,
+
+  # udev device enumeration, input devices, video
+  /etc/udev/udev.conf r,
+  /run/udev/data/** r,
+  @{sys}/bus/ r,
+  @{sys}/class/ r,
+  @{sys}/class/drm/ r,
+  @{sys}/class/input/ r,
+  @{sys}/class/sound/ r,
+  @{sys}/devices/**/drm/** r,
+  @{sys}/devices/**/input/** r,
+  @{sys}/devices/**/sound/**/input*/** r,
+  @{sys}/devices/**/sound/**/uevent r,
+  @{sys}/devices/pci*/**/config r,
+  @{sys}/devices/pci*/**/revision r,
+
+  /opt/Unigine_Superposition-*/Superposition mrix,
+  /opt/Unigine_Superposition-*/bin/* mrix,
+  /opt/Unigine_Superposition-*/bin/qt/** mr,
+
+  /opt/Unigine_Superposition-*/data/ r,
+  /opt/Unigine_Superposition-*/data/** r,
+
+  #/usr/bin/xdg-open mrix,
+
+  owner @{HOME}/.Superposition/** rwk,
+}
+
+# vim:syntax=apparmor
+
+```
 
 =>../index.gmi 🔙 вернуться к началу...
