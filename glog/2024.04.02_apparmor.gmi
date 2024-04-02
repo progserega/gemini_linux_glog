@@ -1,0 +1,27 @@
+# Настройка Apparmor в Debian 12
+Статьи по теме:
+=>https://help.ubuntu.ru/wiki/руководство_по_ubuntu_server/безопасность/apparmor 
+=>https://vasilisc.com/rules_apparmor
+
+## Просмотр логов:
+```
+journalctl -af _TRANSPORT=audit
+```
+вывод:
+```
+апр 02 18:39:24 sky audit[2103119]: AVC apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=2103119 comm="apparmor_parser"
+апр 02 18:39:24 sky audit[2103119]: AVC apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=2103119 comm="apparmor_parser"
+апр 02 18:39:24 sky audit[2103119]: AVC apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="/usr/lib/connman/scripts/dhclient-script" pid=2103119 comm="apparmor_parser
+```
+
+## Правила доступа:
+
+* `r` - Разрешение на чтение файла.
+* `w` - Разрешение на запись файла.
+* `a` - Ограниченное разрешение на запись файла – процесс может только дописывать
+информацию в файл (полезно для лог-файлов!). 
+
+
+
+
+=>../index.gmi 🔙 вернуться к началу...
