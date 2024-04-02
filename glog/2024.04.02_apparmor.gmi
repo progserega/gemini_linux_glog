@@ -72,7 +72,6 @@ journalctl -af _TRANSPORT=audit
 
 #include <tunables/global>
 
-#profile unreal /usr/lib/unreal-*/System/*.bin flags=(complain) {
 profile superposition /opt/Unigine_Superposition-*/Superposition {
   #include <abstractions/fonts>
   #include <abstractions/X>
