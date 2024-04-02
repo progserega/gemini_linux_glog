@@ -13,7 +13,6 @@ apt-get install apparmor-profiles
 cp /etc/apparmor.d/usr.lib.unreal /etc/apparmor.d/opt.Unigine_Superposition-1.1.Superposition
 ```
 3. Правим путь к файлу бинарника внутри профиля.
-
 4. Перезапускаем apparmor, смотрим логи:
 ```
 systemctl reload apparmor; journalctl -af _TRANSPORT=audit
