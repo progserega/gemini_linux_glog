@@ -1,0 +1,52 @@
+# Работа с зашифрованными разделами в Debian 12
+Статьи по теме:
+=>https://help.ubuntu.com/community/ResizeEncryptedPartitions#Enlarge_an_encrypted_partition
+=>https://vasilisc.com/rules_apparmor
+
+## Логика
+TODO
+
+## Расширение раздела 
+Есть LVM, в нём раздел home, в нём криптоконтейнер, в нём btrfs, который примонтирован в home.
+
+Расширение этого дела происходит так:
+
+Пасширяем LVM-контейнер до размера 100Гб :
+```
+lvresize -L 100G /dev/alteros_rsk405113/deb_home
+```
+Смотрим как называется криптоконтейнер:
+```
+lsblk
+
+NAME                                   MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
+nvme0n1                                259:0    0 238,5G  0 disk  
+├─nvme0n1p1                            259:1    0   200M  0 part  /boot/efi
+├─nvme0n1p2                            259:2    0     1G  0 part  
+└─nvme0n1p3                            259:3    0 237,3G  0 part  
+  ├─alteros_rsk405113-swap             254:0    0   7,6G  0 lvm   
+    ├─alteros_rsk405113-home             254:1    0    20G  0 lvm   
+      ├─alteros_rsk405113-root             254:2    0    30G  0 lvm   
+        ├─alteros_rsk405113-deb_home         254:3    0   100G  0 lvm   
+          │ └─alteros_rsk405113-deb_home_crypt 254:5    0   100G  0 crypt /home
+            └─alteros_rsk405113-deb_root         254:4    0    30G  0 lvm   /
+```
+Смотрим статус криптоконтейнера:
+```
+cryptsetup status alteros_rsk405113-deb_home_crypt
+```
+Расширяем криптоконтейнер:
+```
+cryptsetup resize alteros_rsk405113-deb_home_crypt
+```
+Смотрим btrfs разделы:
+```
+btrfs filesystem show -d
+```
+Расширяем btrfs, указывая точку монтирования:
+```
+btrfs filesystem resize max /home/
+```
+готово
+
+=>../index.gmi 🔙 вернуться к началу...
