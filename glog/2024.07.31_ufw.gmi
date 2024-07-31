@@ -1,0 +1,54 @@
+# Работа с базовым firewall-ом в debian 12
+
+=>../index.gmi 🔙 вернуться к началу...
+
+Статьи по теме:
+=>https://idroot.us/configure-ufw-firewall-on-debian-12/
+
+## Логика
+Базовый простенький фаервол "из-коробки" с относительно простым синтаксисом и автозапуском.
+
+## Просмотр правил и статуса:
+```
+ufw status verbose
+```
+вывод:
+```
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                  
+80/tcp                     ALLOW IN    Anywhere                  
+443                        ALLOW IN    Anywhere                  
+8080                       ALLOW IN    192.168.77.0/24           
+8081                       ALLOW IN    192.168.77.0/24           
+8000                       ALLOW IN    192.168.77.0/24            # django prod
+8001                       ALLOW IN    192.168.77.0/24            # django dev
+22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+443 (v6)                   ALLOW IN    Anywhere (v6)            
+```
+
+## Добавление правил:
+### Правила по-умолчанию для цепочек:
+```
+ufw default deny incoming
+ufw default allow outgoing
+```
+### На порт с сети
+```
+ufw allow in from 192.168.77.0/24  to any  port 8001 comment "django dev"
+```
+где "any" - это адрес получателя (в данном случае локальные все интерфейсы).
+
+## Удаление привил:
+Копируем то же самое всё (вплоть до комментария), но после "ufw" ставим "delete":
+```
+ufw delete allow in from 192.168.77.0/24  to any  port 8001 comment "django dev"
+```
+
+=>../index.gmi 🔙 вернуться к началу...
