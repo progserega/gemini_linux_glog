@@ -1,6 +1,7 @@
 # Линукс-блог пользователя progserega
 Картинка:
 =>img/linux.png Иконка линукса
+=>glog/2024.11.12_wayland.gmi 2024.11.12 Настройка wayland окружений 
 =>glog/2024.07.31_ufw.gmi 2024.07.31 Работа с базовым firewall-ом "ufw" в debian 12
 =>glog/2024.07.11_crypt_home.gmi 2024.07.11 Работа с зашифрованным разделом на ноуте
 =>glog/2024.04.02_apparmor.gmi 2024.04.02 настройка AppArmor
