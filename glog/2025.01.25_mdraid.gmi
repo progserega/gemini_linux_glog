@@ -258,10 +258,16 @@ echo 1 >/sys/block/sdX/device/delete
 echo "- - -" >/sys/class/scsi_host/hostX/scan
 ```
 ##  Ссылки
-* =>http://xgu.ru/wiki/Программный_RAID_в_Linux]]
-* =>http://en.gentoo-wiki.com/wiki/Software_RAID_Install Инструкция по установке RAID в Gentoo-wiki
-* =>https://bbs.archlinux.org/viewtopic.php?id=88876]]
-* =>http://busybox.net/~aldot/mkfs_stride.html]]
-* =>http://habrahabr.ru/blogs/linux/111036/ Оптимизация RAID6
-* =>https://habrahabr.ru/post/102387 Горячее подключение SATA-дисков.
+* 
+=>http://xgu.ru/wiki/Программный_RAID_в_Linux]]
+* 
+=>http://en.gentoo-wiki.com/wiki/Software_RAID_Install Инструкция по установке RAID в Gentoo-wiki
+* 
+=>https://bbs.archlinux.org/viewtopic.php?id=88876]]
+* 
+=>http://busybox.net/~aldot/mkfs_stride.html]]
+* 
+=>http://habrahabr.ru/blogs/linux/111036/ Оптимизация RAID6
+* 
+=>https://habrahabr.ru/post/102387 Горячее подключение SATA-дисков.
 
