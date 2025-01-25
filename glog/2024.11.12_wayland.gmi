@@ -46,8 +46,8 @@ _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defa
 -Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Djdk.gtk.version=3'
 ```
 ## Полезные утилиты
-  - `xlsclients` - просмотр клиентов, которые используют Xorg в окружении wayland через xwayland
-  - `wlr-randr` - аналог xrandr, показывающий мониторы и поддерживаемые ими разрешения  
+  - xlsclients - просмотр клиентов, которые используют Xorg в окружении wayland через xwayland
+  - wlr-randr - аналог xrandr, показывающий мониторы и поддерживаемые ими разрешения  
 
 ## Настройка работы с диалогами
 Установить:
