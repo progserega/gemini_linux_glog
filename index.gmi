@@ -1,12 +1,13 @@
 # Линукс-блог пользователя progserega
 Картинка:
 =>img/linux.png Иконка линукса
+=>glog/2025.01.25_mdraid.gmi 2025.01.25 mdraid - настройка, эксплуатация
+=>glog/2025.01.25_lvm.gmi 2025.01.25 Настройка lvm, lvm cache на nvme в том числе для root-раздела  
 =>glog/2024.11.12_wayland.gmi 2024.11.12 Настройка wayland окружений 
 =>glog/2024.07.31_ufw.gmi 2024.07.31 Работа с базовым firewall-ом "ufw" в debian 12
 =>glog/2024.07.11_crypt_home.gmi 2024.07.11 Работа с зашифрованным разделом на ноуте
 =>glog/2024.04.02_apparmor.gmi 2024.04.02 настройка AppArmor
 =>glog/2024.02.23_mpd_and_piperwire.gmi 2024.02.23 настройка mpd на работу из-под пользователя как systemd-unit с выводом звука через piperwire в Debian 12
-=>glog/2023.12.25_lvm.gmi 2023.12.25 Настройка lvm, lvm cache на nvme в том числе для root-раздела  
 =>glog/2023.03.14_barman.gmi 2023.03.14 Настройка barman для резервирования postgres
 =>glog/2023.02.21_postgrespro_1c.gmi 2023.02.21 Настройка PostgresPro 1C enterprise для работы с 1С
 =>glog/2016.10.17_postgis.gmi 2016.10.17 Поиск близлежайших объектов в postgis
