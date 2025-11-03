@@ -1,0 +1,42 @@
+=>../index.gmi 🔙 вернуться к началу...
+
+# Работа с программным BTRFS
+См. так же 
+=>https://wiki.archlinux.org/title/Btrfs_(%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)#
+
+А так же  
+=>https://help.ubuntu.ru/wiki/btrfs
+
+В случае, если необходимо загружать систему с корнем на 
+=>http://ru.wikipedia.org/wiki/RAID#RAID_1 RAID1
+
+Ну и официальную документацию:
+=>https://btrfs.readthedocs.io/en/latest/Introduction.html
+
+
+## Установка
+```
+mkfs.btrfs -v -L backup_hdd -d single -m dup --checksum sha256 /dev/sdc1 -f
+```
+
+## Эксплуатация
+### Субволумы и снапшоты
+### Использование
+### Регулярное обслуживание
+
+## Бэкап
+Полная передача снапшота:
+```
+sudo btrfs send /path/to/source/.snapshot/@new-snapshot | ssh
+user@backup-server.example.com 'sudo btrfs receive /path/to/destination/'
+```
+
+Инкрементная передача:
+```
+sudo btrfs send -p /path/to/source/.snapshot/@parent-snapshot /path/to/source/.snapshot/@new-snapshot | ssh
+user@backup-server.example.com 'sudo btrfs receive /path/to/destination/'
+```
+
+##  Ссылки
+
+=>../index.gmi 🔙 вернуться к началу...
