@@ -1,6 +1,8 @@
 # Линукс-блог пользователя progserega
 Картинка:
 =>img/linux.png Иконка линукса
+=>glog/2025.10.25_postgres_biha_cluster.gmi 2025.10.25 postgrespro biha кластер - настройка кластера postgrespro
+=>glog/2025.09.20_btrfs.gmi 2025.09.20 btrfs - настройка, эксплуатация
 =>glog/2025.01.25_mdraid.gmi 2025.01.25 mdraid - настройка, эксплуатация
 =>glog/2025.01.25_lvm.gmi 2025.01.25 Настройка lvm, lvm cache на nvme в том числе для root-раздела  
 =>glog/2024.11.12_wayland.gmi 2024.11.12 Настройка wayland окружений 
