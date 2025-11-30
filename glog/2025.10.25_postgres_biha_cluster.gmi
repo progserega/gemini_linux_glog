@@ -272,8 +272,7 @@ id | leader_id | term | online |   state   | last_known_state | since_last_hb
 su postgres
 export PATH=$PATH:/opt/pgpro/ent-17/bin
 cd ~
-bihactl  add --biha-node-id=2 --host=pg-cluster-02.internal --use-leader "host=pg-cluster-03.internal port=5432 biha-port=5433"
---pgdata=/data/postgres_data/ --enable-proxima
+bihactl  add --biha-node-id=2 --host=pg-cluster-02.internal --use-leader "host=pg-cluster-03.internal port=5432 biha-port=5433" --pgdata=/data/postgres_data/ --enable-proxima
 ```
 команда подвиснет надолго, т.к. происходит репликация данных с лидера. К слову, чтобы репликация работала - нужно удостовериться,
 что под пользователем postgres прописаны логин и пароль для репликации:
@@ -317,6 +316,24 @@ kill 573326
 rm -rf /data/postgres_data/*
 ```
 повторяем пункты, начиная с раздела "Ставим первую ноду"
+
+### Если кластер падает с сообщениями о лимитах
+При работе с 1С может возникнуть ошибка переполнения лимита открытых файлов. Чтобы её обойти - нужно увеличить лимит для
+systemd-unit-а postgrespro (на всех нодах кластера):
+```
+systemcl edit postgrespro-ent-17.service
+```
+добавить строки:
+```
+[Service]
+LimitNOFILE=65536
+```
+сохранить (ctrl+o), enter, ctrl+x
+
+и перезагрузить сервисы postgrespro на всех нодах кластера (наверное лучше с некоторыми промежутками и контролем состояния кластера):
+```
+systemcl restart postgrespro-ent-17.service
+```
 
 
 
