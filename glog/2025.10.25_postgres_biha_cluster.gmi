@@ -214,7 +214,92 @@ random_page_cost = 4.0  # for HDD
 systemctl start postgrespro-ent-17.service
 ```
 
-## Переинициализация с нуля в случае сбоя
+## Сбои
+### В случае сбоя одной ноды - перемеотка состояния
+### Переподключаем ноду в кластер
+Для примера удалим ноду с id=2 из кластера, где лидер имеет id=3.
+
+Сначала останавливаем postgres на ноде 2:
+```
+systemctl stop postgrespro-ent-17.service
+```
+Проверяем статус кластера на лидере (нода 3):
+```
+postgres@pg-cluster-03:/data/postgres_data/pg_wal$ echo "SELECT * FROM biha.status_v;"|psql -d biha_db
+id | leader_id | term | online |   state   | last_known_state | since_last_hb
+----+-----------+------+--------+-----------+------------------+---------------
+1 |         3 |    5 | f      | UNKNOWN   | UNKNOWN          |
+2 |         3 |    9 | f      | UNKNOWN   | UNKNOWN          |
+3 |         3 |    9 | t      | LEADER_RO | LEADER_RO        |
+(3 строки)
+
+postgres@pg-cluster-03:/data/postgres_data/pg_wal$
+```
+Перемещаем всё содержимое в директории данных на НОДЕ 2 (ВНИМАНИЕ! Именно на второй, а не на лидере!!!):
+```
+sudo su
+mv /data/postgres_data /data/postgres_data.old
+mkdir /data/postgres_data
+chown postgres /data/postgres_data
+chmod 700 /data/postgres_data
+```
+На лидере (нода 3) - запускаем команду удаления ноды:
+```
+su postgres
+export PATH=$PATH:/opt/pgpro/ent-17/bin
+echo "SELECT biha.remove_node(2);"|psql -d biha_db
+```
+вывод команды:
+```
+remove_node
+-------------
+t
+(1 строка)
+```
+проверяем статус кластера:
+```
+postgres@pg-cluster-03:/data/postgres_data/pg_wal$ echo "SELECT * FROM biha.status_v;"|psql -d biha_db
+id | leader_id | term | online |   state   | last_known_state | since_last_hb
+----+-----------+------+--------+-----------+------------------+---------------
+1 |         3 |    5 | f      | UNKNOWN   | UNKNOWN          |
+3 |         3 |   10 | t      | LEADER_RO | LEADER_RO        |
+(2 строки)
+```
+удалилась нода. Теперь на ноде 2 добавляем её в кластер заново (порты - по-умолчанию, магическое число не используем, т.к в нашем
+случае лидер сменился - с 1 на 3). Важно запускать команду в домашнем каталоге пользователя postgres, чтобы лог файл создался в
+текущем каталоге, а не в каталоге данных постгреса:
+```
+su postgres
+export PATH=$PATH:/opt/pgpro/ent-17/bin
+cd ~
+bihactl  add --biha-node-id=2 --host=pg-cluster-02.internal --use-leader "host=pg-cluster-03.internal port=5432 biha-port=5433"
+--pgdata=/data/postgres_data/ --enable-proxima
+```
+команда подвиснет надолго, т.к. происходит репликация данных с лидера. К слову, чтобы репликация работала - нужно удостовериться,
+что под пользователем postgres прописаны логин и пароль для репликации:
+```
+postgres@pg-cluster-02:~$ cat ~/.pgpass
+*:*:*:biha_replication_user:XXXXXXXX
+postgres@pg-cluster-02:~$
+```
+Тюнинговать под 1С не нужно - тюнингованный конфиг прилетит с мастера в процессе ввода ноды в кластер.
+
+После успешной отработки команды - запускаем сервис postgres:
+```
+systemctl start postgrespro-ent-17.service
+```
+Проверяем статус 2-й ноды на лидере:
+```
+postgres@pg-cluster-03:/data/postgres_data/pg_wal$ echo "SELECT * FROM biha.status_v;"|psql -d biha_db
+id | leader_id | term | online |   state   | last_known_state | since_last_hb
+----+-----------+------+--------+-----------+------------------+----------------
+1 |         3 |    5 | f      | UNKNOWN   | UNKNOWN          |
+2 |         3 |   11 | t      | FOLLOWER  | FOLLOWER         | 00:00:00.98187
+3 |         3 |   11 | t      | LEADER_RW | LEADER_RW        |
+(3 строки)
+```
+
+### Тотальная переинициализация с нуля в случае сбоя
 Если что-то пошло не так и мы решили заново создать кластер, то повторяем на ВСЕХ нодах,
 начиная с последней: 3, 2, 1:
 
