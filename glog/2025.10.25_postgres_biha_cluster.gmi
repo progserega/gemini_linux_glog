@@ -64,9 +64,16 @@ dm212234234234235345cGctY2x1c3Rl2323243423Rlcm5hbC32325243534zIgYmloY4234234PTU0
 ```
 запоминаем его!
 
-стартуем postgres на первой ноде:
+Добавляем доступы с локалки под паролями - добавляем в файл /data/postgres_data/pg_hba.conf:
 ```
-pg_ctl start -D /data/postgres_data/ -l /data/postgres_data/cluster_leader.log
+# from local net:
+host            all             all             0.0.0.0/0       md5
+```
+стартуем postgres на первой ноде (под root):
+
+```
+systemctl enable postgrespro-ent-17.service
+systemctl start postgrespro-ent-17.service
 ```
 ### проверка статуса первой ноды
 ```
@@ -99,9 +106,10 @@ export PATH=$PATH:/opt/pgpro/ent-17/bin
 export MAGIC_STRING="dm212234234234235345cGctY2x1c3Rl2323243423Rlcm5hbC32325243534zIgYmloY4234234PTU0MzM="
 bihactl  add --biha-node-id=2 --host=pg-cluster-02.internal --magic-string=$MAGIC_STRING --pgdata=/data/postgres_data/ --enable-proxima
 ```
-стартуем postgres на второй ноде:
+стартуем postgres на второй ноде (под root):
 ```
-pg_ctl start -D /data/postgres_data/ -l /data/postgres_data/cluster_leader.log
+systemctl enable postgrespro-ent-17.service
+systemctl start postgrespro-ent-17.service
 ```
 ### проверка статуса первой ноды
 ```
@@ -134,9 +142,10 @@ export PATH=$PATH:/opt/pgpro/ent-17/bin
 export MAGIC_STRING="dm212234234234235345cGctY2x1c3Rl2323243423Rlcm5hbC32325243534zIgYmloY4234234PTU0MzM="
 bihactl  add --biha-node-id=3 --host=pg-cluster-03.internal --magic-string=$MAGIC_STRING --pgdata=/data/postgres_data/ --enable-proxima
 ```
-стартуем postgres на третьей ноде:
+стартуем postgres на третьей ноде (под root):
 ```
-pg_ctl start -D /data/postgres_data/ -l /data/postgres_data/cluster_leader.log
+systemctl enable postgrespro-ent-17.service
+systemctl start postgrespro-ent-17.service
 ```
 ### проверка статуса первой ноды
 ```
@@ -473,6 +482,20 @@ exit $exit_status
 root@pg-cluster-proxy:/etc/haproxy# cat /etc/haproxy/pgsql_passwd
 XXXXXXXXXX
 root@pg-cluster-proxy:/etc/haproxy#
+```
+#### Доступ пользователя haproxy_check на кластер
+На кластере нужно добавить пользователя и дать ему права:
+```
+su postgres
+psql
+```
+выполнить sql-команды:
+```
+CREATE USER haproxy_check WITH PASSWORD 'XXXXXXX' NOCREATEDB NOCREATEROLE NOSUPERUSER;
+GRANT CONNECT ON DATABASE postgres TO haproxy_check;
+grant execute  on pg_is_in_recovery to haproxy_check;
+grant execute  on pg_is_in_recovery() to haproxy_check;
+grant execute  on pg_is_in_recovery() to haproxy_check;
 ```
 
 
