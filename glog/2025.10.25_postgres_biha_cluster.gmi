@@ -344,6 +344,38 @@ LimitNOFILE=65536
 systemcl restart postgrespro-ent-17.service
 ```
 
+### 
+При недостаточной скорости дисковой подсистемы и синхронизации кластера в случае высокой нагрузки есть вероятность, что кластер
+развалится, потому что:
+1. опция max_slot_wal_keep_size по-умолчанию выставлена в 5 Гб. Т.е. мастре хранит не более 5 Гб валов.
+2. в случае интенсивной работы с базой и медленной дисковой подсистемой - валы могут начать копиться - достигнут 5 Гб и начнут
+удаляться. При этом реплики могут не успеть скачать валы, а они уже удалятся на мастере.
+3. в результате обе реплики уйдут в невостановимое состояние ошибки (т.к. не откуда брать отсутствующие валы) - "догнать" мастер -
+нет возможности.
+4. единственное решение - это перевводить реплики в кластер.
+
+Чтобы предотвратить наступление этой проблемы - можно увеличить размер хранения валов.
+
+На мастере выполнить команды sql:
+
+Показать текущее значение опции:
+```
+show max_slot_wal_keep_size;
+```
+Увеличить:
+```
+alter system set max_slot_wal_keep_size = '200GB';
+```
+применить изменения:
+```
+select pg_reload_conf();
+```
+Проверить, что применилось:
+```
+show max_slot_wal_keep_size;
+```
+
+
 ## Настройка haproxy
 Для организации единой точки входа - нужно настроить haproxy.
 Ставим:
@@ -493,10 +525,9 @@ psql
 ```
 CREATE USER haproxy_check WITH PASSWORD 'XXXXXXX' NOCREATEDB NOCREATEROLE NOSUPERUSER;
 GRANT CONNECT ON DATABASE postgres TO haproxy_check;
-grant execute  on pg_is_in_recovery to haproxy_check;
-grant execute  on pg_is_in_recovery() to haproxy_check;
 grant execute  on pg_is_in_recovery() to haproxy_check;
 ```
+
 
 
 
