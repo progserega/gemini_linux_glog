@@ -375,6 +375,95 @@ GRANT CONNECT ON DATABASE postgres TO haproxy_check;
 grant execute  on pg_is_in_recovery() to haproxy_check;
 ```
 
+# Установка системы резервног окопирования pg_probackup
+## Ставим систему:
+```
+apt-get install pg-probackup-ent-17
+```
+В случае установки из пакетов - достаточно двух пакетов:
+ - pg-probackup-ent-17_2.8.9-1.17x8664_amd64.deb
+ - postgrespro-ent-17-libs_17.5.1-1.17x8664_amd64.deb
+## Добавляем авторизацию ssh:
+
+1. генерируем ключ на сервере бэкапов для пользователя, под которым будет осуществляться бэкап (пароль не задаём):
+```
+ssh-keygen
+ssh-copy-id -i ~/.ssh/id_rsa.pub postgres@pg-node-01.lan
+ssh-copy-id -i ~/.ssh/id_rsa.pub postgres@pg-node-02.lan
+ssh-copy-id -i ~/.ssh/id_rsa.pub postgres@pg-node-03.lan
+```
+2. проверяем, что этот ключ появился в ~/.ssh/authorized_keys у пользователя postgres на нодах кластера
+3. вы кластере postgres создаём пользователя репликации:
+```
+CREATE ROLE backup WITH LOGIN REPLICATION password 'XXXXXX';
+```
+4. добавляем доступ репликации в файл pg_hba.conf на каждой ноде кластера:
+```
+# backup to cyberbackup:
+host    replication     backup             CyberBackup.pma.local            md5
+host    backupdb     backup             CyberBackup.pma.local            md5
+```
+Где CyberBackup.pma.local - сервер, на который будет осуществляться бэкап
+После чего перезагружаем конфигурацию на каждой ноде кластера:
+```
+select pg_reload_conf();
+```
+Не забудьте проверить, что хост CyberBackup.pma.local разыменовывается на всех нодах кластера. Если нет - то как минимум добавьте
+соответствующую запись в файл /etc/hosts на каждой ноде кластера.
+
+5. на каждой ноде в файле postgresql.conf правим параметры:
+```
+wal_level = replica
+max_wal_senders = 10
+```
+и перезагружаем сервис:
+```
+select pg_reload_conf();
+```
+6. На сервере бэкапов добавляем записи подключения ко всем нодам кластера к базе backupdb для пользователя backup - делаем это под
+пользователем, под которым будем там делать бэкапы (в нашем случае это pgprobackup):
+```
+echo "pg-cluster-01.pma.local:5432:replication:backup:XXXXX">>~/.pgpass
+echo "pg-cluster-01.pma.local:5432:backupdb:backup:XXXXX">>~/.pgpass
+echo "pg-cluster-02.pma.local:5432:replication:backup:XXXXX">>~/.pgpass
+echo "pg-cluster-02.pma.local:5432:backupdb:backup:XXXXX">>~/.pgpass
+echo "pg-cluster-03.pma.local:5432:replication:backup:XXXXX">>~/.pgpass
+echo "pg-cluster-03.pma.local:5432:backupdb:backup:XXXXX">>~/.pgpass
+chmod 600 ~/.pgpass
+```
+Где пароль - взят из команды создания роли пользователя backup на ведущей ноде кластера.
+
+6. Инициализируем каталог pbprobackup (куда будем бэкапить) на сервере бэкапов (перед этим его не забываем создать).
+Делаем это под пользователем, под которым будем осуществлять бэкап (в нашем случае это pgprobackup):
+```
+pg_probackup init -B /home/pgprobackup/pgcluster2025_backup_db
+```
+вывод команды:
+```
+INFO: Backup catalog '/home/pgprobackup/pgcluster2025_backup_db' successfully initialized''
+```
+7.Добавляем экземпляр соединения в систему бэкапов (на сервере бэкапов под пользователем бэкапирования):
+```
+pg_probackup add-instance -B /home/pgprobackup/pgcluster2025_backup_db -D /data/postgres_data --instance=pg_cluster_2025_node03 --remote-host=pg-cluster-03.pma.local --remote-user=postgres
+```
+Где:
+  * --instance=pg_cluster_2025_node03 - наименование бэкапной настройки на соответствующий сервер
+вывод комаанды:
+```
+INFO: Instance 'pg_cluster_2025_node03' successfully initialized
+```
+8. выставляем политику хранения бэкапов за 7 дней и минимум 2 полные копии:
+```
+pg_probackup set-config --instance db1 --retention-window=7 --retention-redundancy=2
+```
+
+9. делаем первый полный бэкап:
+```
+pg_probackup backup -B /home/pgprobackup/pgcluster2025_backup_db -b FULL --instance=pg_cluster_2025_node03 --stream --remote-host=pg-cluster-03.pma.local --remote-user=postgres -U backup -d backupdb
+```
+Ждём завершения бэкапа.
+
+
 # Сбои
 ## В случае сбоя одной ноды - перемеотка состояния
 FIXME 
