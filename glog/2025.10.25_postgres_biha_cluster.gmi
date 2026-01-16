@@ -362,7 +362,7 @@ root@pg-cluster-proxy:/etc/haproxy# cat /etc/haproxy/pgsql_passwd
 XXXXXXXXXX
 root@pg-cluster-proxy:/etc/haproxy#
 ```
-### Доступ пользователя haproxy_check на кластер
+## Доступ пользователя haproxy_check на кластер
 На кластере нужно добавить пользователя и дать ему права:
 ```
 su postgres
@@ -414,7 +414,8 @@ select pg_reload_conf();
 Не забудьте проверить, что хост CyberBackup.pma.local разыменовывается на всех нодах кластера. Если нет - то как минимум добавьте
 соответствующую запись в файл /etc/hosts на каждой ноде кластера.
 
-## на каждой ноде в файле postgresql.conf правим параметры:
+## Правим параметры репликации в postgres 
+на каждой ноде в файле postgresql.conf правим параметры:
 ```
 wal_level = replica
 max_wal_senders = 10
