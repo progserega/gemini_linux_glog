@@ -499,18 +499,12 @@ pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_clu
 Instance                Version  ID      Recovery Time                  Mode  WAL Mode  TLI    Time   Data    WAL  Zalg  Zratio
 Start LSN    Stop LSN     Status
 ===================================================================================================================================================================
-pg_cluster_2025_node03  17       T8ZK22  2026-01-17 13:21:19.041629+10  FULL  STREAM    3/0  1h:25m  203GB  544MB  none    1.00
-CF/4556F850  CF/66C449D0  OK
-pg_cluster_2025_node03  17       T8Y9D5  2026-01-16 20:32:39+10         FULL  STREAM    3/0  1h:24m  202GB      0  none    1.00
-CD/F1D94500  0/0          ERROR
-pg_cluster_2025_node03  17       T8Y8Y2  2026-01-16 18:58:50+10         FULL  STREAM    3/0       0      0      0  none
-1.00  CD/F1D94500  0/0          ERROR
-pg_cluster_2025_node03  17       T8Y8SU  2026-01-16 18:55:43+10         FULL  STREAM    3/0      1s      0      0  none
-1.00  CD/EEA6B680  0/0          ERROR
-pg_cluster_2025_node03  ----     T8Y8RW  2026-01-16 18:55:14+10         FULL  STREAM    0/0      6s      0      0  none
-1.00  0/0          0/0          ERROR
-pg_cluster_2025_node03  ----     T8Y7Z7  2026-01-16 18:38:04+10         FULL  STREAM    0/0      9s      0      0  none
-1.00  0/0          0/0          ERROR
+pg_cluster_2025_node03  17       T8ZK22  2026-01-17 13:21:19.041629+10  FULL  STREAM    3/0  1h:25m  203GB  544MB  none   1.00 CF/4556F850  CF/66C449D0  OK
+pg_cluster_2025_node03  17       T8Y9D5  2026-01-16 20:32:39+10         FULL  STREAM    3/0  1h:24m  202GB      0  none   1.00 CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8Y2  2026-01-16 18:58:50+10         FULL  STREAM    3/0       0      0      0  none   1.00  CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8SU  2026-01-16 18:55:43+10         FULL  STREAM    3/0      1s      0      0  none   1.00  CD/EEA6B680  0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y8RW  2026-01-16 18:55:14+10         FULL  STREAM    0/0      6s      0      0  none   1.00  0/0          0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y7Z7  2026-01-16 18:38:04+10         FULL  STREAM    0/0      9s      0      0  none   1.00  0/0          0/0          ERROR
 ```
 ## делаем инкрементный бэкап
 Запускаем команду:
@@ -527,20 +521,13 @@ pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_clu
 Instance                Version  ID      Recovery Time                  Mode   WAL Mode  TLI     Time   Data    WAL  Zalg  Zratio
 Start LSN    Stop LSN     Status
 =====================================================================================================================================================================
-pg_cluster_2025_node03  17       T8ZQL0  2026-01-17 14:34:39.464126+10  DELTA  STREAM    3/3  17m:16s  374MB  256MB  none
-1.00  CF/6C8A59C8  CF/7B0F2190  OK
-pg_cluster_2025_node03  17       T8ZK22  2026-01-17 13:21:19.041629+10  FULL   STREAM    3/0   1h:25m  203GB  544MB  none
-1.00  CF/4556F850  CF/66C449D0  OK
-pg_cluster_2025_node03  17       T8Y9D5  2026-01-16 20:32:39+10         FULL   STREAM    3/0   1h:24m  202GB      0  none
-1.00  CD/F1D94500  0/0          ERROR
-pg_cluster_2025_node03  17       T8Y8Y2  2026-01-16 18:58:50+10         FULL   STREAM    3/0        0      0      0  none
-1.00  CD/F1D94500  0/0          ERROR
-pg_cluster_2025_node03  17       T8Y8SU  2026-01-16 18:55:43+10         FULL   STREAM    3/0       1s      0      0  none
-1.00  CD/EEA6B680  0/0          ERROR
-pg_cluster_2025_node03  ----     T8Y8RW  2026-01-16 18:55:14+10         FULL   STREAM    0/0       6s      0      0  none
-1.00  0/0          0/0          ERROR
-pg_cluster_2025_node03  ----     T8Y7Z7  2026-01-16 18:38:04+10         FULL   STREAM    0/0       9s      0      0  none
-1.00  0/0          0/0          ERROR
+pg_cluster_2025_node03  17       T8ZQL0  2026-01-17 14:34:39.464126+10  DELTA  STREAM    3/3  17m:16s  374MB  256MB  none 1.00  CF/6C8A59C8  CF/7B0F2190  OK
+pg_cluster_2025_node03  17       T8ZK22  2026-01-17 13:21:19.041629+10  FULL   STREAM    3/0   1h:25m  203GB  544MB  none 1.00  CF/4556F850  CF/66C449D0  OK
+pg_cluster_2025_node03  17       T8Y9D5  2026-01-16 20:32:39+10         FULL   STREAM    3/0   1h:24m  202GB      0  none 1.00  CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8Y2  2026-01-16 18:58:50+10         FULL   STREAM    3/0        0      0      0  none 1.00  CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8SU  2026-01-16 18:55:43+10         FULL   STREAM    3/0       1s      0      0  none 1.00  CD/EEA6B680  0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y8RW  2026-01-16 18:55:14+10         FULL   STREAM    0/0       6s      0      0  none 1.00  0/0          0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y7Z7  2026-01-16 18:38:04+10         FULL   STREAM    0/0       9s      0      0  none 1.00  0/0          0/0          ERROR
 ```
 ## сохраняем опции
 Для упрощения сохраняем опции в конфиге:
@@ -606,7 +593,9 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/pgpro/ent
 # Получаем статус последней копии и отправляем его в zabbix.
 /opt/pgpro/ent-17/bin/pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03 | head -n 4|tail -n 1|awk '{print $16}' > /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
 ```
+
 если же есть jq и zabbix-agent:
+
 ```
 #!/bin/sh
 # подгружаем профиль с настройками
@@ -618,8 +607,13 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/pgpro/ent
 /opt/pgpro/ent-17/bin/pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03 --format=json | jq -c '.[].backups[0].status' > /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
 ```
 
-
-
+не забудьте создать файл:
+```
+mkdir -p /var/spool/zabbix/
+touch /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
+chown pgprobackup:zabbix /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
+chmod 640 /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
+```
 
 # Сбои
 ## В случае сбоя одной ноды - перемеотка состояния
