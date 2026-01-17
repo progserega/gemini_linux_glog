@@ -396,7 +396,24 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub postgres@pg-node-03.lan
 
 ## На кластере postgres создаём пользователя репликации:
 ```
+CREATE DATABASE backupdb;
+\c backupdb
+BEGIN;
 CREATE ROLE backup WITH LOGIN REPLICATION password 'XXXXXX';
+GRANT USAGE ON SCHEMA pg_catalog TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.current_setting(text) TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.set_config(text, text, boolean) TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_is_in_recovery() TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_backup_start(text, boolean) TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_backup_stop(boolean) TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_create_restore_point(text) TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_switch_wal() TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_last_wal_replay_lsn() TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.txid_current() TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.txid_current_snapshot() TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.txid_snapshot_xmax(txid_snapshot) TO backup;
+GRANT EXECUTE ON FUNCTION pg_catalog.pg_control_checkpoint() TO backup;
+COMMIT;
 ```
 пароль - запоминаем.
 
@@ -471,6 +488,137 @@ pg_probackup set-config --instance db1 --retention-window=7 --retention-redundan
 pg_probackup backup -B /home/pgprobackup/pgcluster2025_backup_db -b FULL --instance=pg_cluster_2025_node03 --stream --remote-host=pg-cluster-03.pma.local --remote-user=postgres -U backup -d backupdb
 ```
 Ждём завершения бэкапа.
+
+Проверяем статус после выполнения:
+```
+pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03
+```
+вывод:
+```
+===================================================================================================================================================================
+Instance                Version  ID      Recovery Time                  Mode  WAL Mode  TLI    Time   Data    WAL  Zalg  Zratio
+Start LSN    Stop LSN     Status
+===================================================================================================================================================================
+pg_cluster_2025_node03  17       T8ZK22  2026-01-17 13:21:19.041629+10  FULL  STREAM    3/0  1h:25m  203GB  544MB  none    1.00
+CF/4556F850  CF/66C449D0  OK
+pg_cluster_2025_node03  17       T8Y9D5  2026-01-16 20:32:39+10         FULL  STREAM    3/0  1h:24m  202GB      0  none    1.00
+CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8Y2  2026-01-16 18:58:50+10         FULL  STREAM    3/0       0      0      0  none
+1.00  CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8SU  2026-01-16 18:55:43+10         FULL  STREAM    3/0      1s      0      0  none
+1.00  CD/EEA6B680  0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y8RW  2026-01-16 18:55:14+10         FULL  STREAM    0/0      6s      0      0  none
+1.00  0/0          0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y7Z7  2026-01-16 18:38:04+10         FULL  STREAM    0/0      9s      0      0  none
+1.00  0/0          0/0          ERROR
+```
+## делаем инкрементный бэкап
+Запускаем команду:
+```
+/opt/pgpro/ent-17/bin/pg_probackup backup -B /home/pgprobackup/pgcluster2025_backup_db -b delta --instance=pg_cluster_2025_node03 --stream --remote-host=pg-cluster-03.pma.local --remote-user=postgres -U backup -d backupdb
+```
+После завершения, опять проверяем:
+```
+pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03
+```
+вывод:
+```
+=====================================================================================================================================================================
+Instance                Version  ID      Recovery Time                  Mode   WAL Mode  TLI     Time   Data    WAL  Zalg  Zratio
+Start LSN    Stop LSN     Status
+=====================================================================================================================================================================
+pg_cluster_2025_node03  17       T8ZQL0  2026-01-17 14:34:39.464126+10  DELTA  STREAM    3/3  17m:16s  374MB  256MB  none
+1.00  CF/6C8A59C8  CF/7B0F2190  OK
+pg_cluster_2025_node03  17       T8ZK22  2026-01-17 13:21:19.041629+10  FULL   STREAM    3/0   1h:25m  203GB  544MB  none
+1.00  CF/4556F850  CF/66C449D0  OK
+pg_cluster_2025_node03  17       T8Y9D5  2026-01-16 20:32:39+10         FULL   STREAM    3/0   1h:24m  202GB      0  none
+1.00  CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8Y2  2026-01-16 18:58:50+10         FULL   STREAM    3/0        0      0      0  none
+1.00  CD/F1D94500  0/0          ERROR
+pg_cluster_2025_node03  17       T8Y8SU  2026-01-16 18:55:43+10         FULL   STREAM    3/0       1s      0      0  none
+1.00  CD/EEA6B680  0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y8RW  2026-01-16 18:55:14+10         FULL   STREAM    0/0       6s      0      0  none
+1.00  0/0          0/0          ERROR
+pg_cluster_2025_node03  ----     T8Y7Z7  2026-01-16 18:38:04+10         FULL   STREAM    0/0       9s      0      0  none
+1.00  0/0          0/0          ERROR
+```
+## сохраняем опции
+Для упрощения сохраняем опции в конфиге:
+```
+/opt/pgpro/ent-17/bin/pg_probackup set-config -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03 --remote-host=pg-cluster-03.pma.local --remote-user=postgres -U backup -d backupdb
+```
+Проверяем:
+```
+/opt/pgpro/ent-17/bin/pg_probackup show-config -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03
+```
+вывод:
+```
+# Backup instance information
+pgdata = /data/postgres_data
+system-identifier = 7580257089323922979
+xlog-seg-size = 16777216
+# Connection parameters
+pgdatabase = backupdb
+pghost = pg-cluster-03.pma.local
+pguser = backup
+# Archive parameters
+archive-timeout = 5min
+# Logging parameters
+log-level-console = INFO
+log-level-file = OFF
+log-format-console = PLAIN
+log-format-file = PLAIN
+log-filename = pg_probackup.log
+log-rotation-size = 0TB
+log-rotation-age = 0d
+# Retention parameters
+retention-redundancy = 2
+retention-window = 7
+wal-depth = 0
+# Compression parameters
+compress-algorithm = none
+compress-level = 1
+# Remote access parameters
+remote-proto = ssh
+remote-host = pg-cluster-03.pma.local
+remote-user = postgres
+# Backup instance information
+write-rate-limit = 0GBps
+```
+## Добавляем задания в cron
+Добавляем в cron задание как файл /etc/cron.d/backup_cluster_pg2025_pgrpo:
+```
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/pgpro/ent-17/bin
+
+30 3 * * 1-6  pgprobackup /home/pgprobackup/backup_cluster_pg2025_pgrpo.sh DELTA
+30 1 * * 7  pgprobackup /home/pgprobackup/backup_cluster_pg2025_pgrpo.sh FULL
+```
+А так же создаём сам скрипт /home/pgprobackup/backup_cluster_pg2025_pgrpo.sh:
+если без jq и заббикс-агента:
+```
+#!/bin/sh
+# подгружаем профиль с настройками
+# вызываем команду создания копии, в качестве параметра передаем метод создания бэкапа (FULL, DELTA и т.д.)
+
+/opt/pgpro/ent-17/bin/pg_probackup backup -B /home/pgprobackup/pgcluster2025_backup_db -b $1 --instance=pg_cluster_2025_node03 -j 2 --compress --stream --delete-expired
+
+# Получаем статус последней копии и отправляем его в zabbix.
+/opt/pgpro/ent-17/bin/pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03 | head -n 4|tail -n 1|awk '{print $16}' > /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
+```
+если же есть jq и zabbix-agent:
+```
+#!/bin/sh
+# подгружаем профиль с настройками
+# вызываем команду создания копии, в качестве параметра передаем метод создания бэкапа (FULL, DELTA и т.д.)
+
+/opt/pgpro/ent-17/bin/pg_probackup backup -B /home/pgprobackup/pgcluster2025_backup_db -b $1 --instance=pg_cluster_2025_node03 -j 2 --compress --stream --delete-expired
+
+# Получаем статус последней копии и отправляем его в zabbix.
+/opt/pgpro/ent-17/bin/pg_probackup show -B /home/pgprobackup/pgcluster2025_backup_db --instance=pg_cluster_2025_node03 --format=json | jq -c '.[].backups[0].status' > /var/spool/zabbix/pg_probackup.pgcluster2025.backup.status
+```
+
+
 
 
 # Сбои
